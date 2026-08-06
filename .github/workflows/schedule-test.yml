@@ -1,0 +1,30 @@
+name: Schedule Test
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "3/5 * * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Record execution time
+        run: |
+          echo "$(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> schedule_test.txt
+
+      - name: Commit result
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add schedule_test.txt
+          git commit -m "Scheduled test" || exit 0
+          git push
